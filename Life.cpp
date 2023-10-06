@@ -1,36 +1,89 @@
 #include <iostream>
+#include <unistd.h>
+#include "Life.h"
 
-void PrintMatrix (char **M, int r, int c) {
-
-  for (int i=0; i < r; i++) {
-    for (int j=0; j < c; j++)
-      std::cout << M[i][j] << ' ';
-    std::cout << std::endl;
-  }
-
-}
+const int gameSize = 50;
+int rows = 25;
+int columns = 25;
+// Need to make multiple boards or else changing the bit inside each cell
+// doesn't matter.
 
 int main (int argc, char *argv[]) {
-  const int gameSize = 50;
-  int rows = 25;
-  int columns = 25;
 
-  char **M = new char * [rows]; //Allocate the array of rows
+
+  char **Current = new char * [rows]; //Allocate the array of rows
+  char **Next = new char * [rows]; //Allocate the array of rows
 
   for (int i=0; i < rows; i++)
-    M[i] = new char[columns]; //allocate the individual rows
+    Current[i] = new char[columns]; //allocate the individual rows
   for (int i=0;i < rows; i++)
     for (int j=0; j < columns; j++)
-      M[i][j] = 'x';
+      Current[i][j] = 'x';
 
-  PrintMatrix (M,rows,columns);
+  // Make the starting shape here
+
+  // Glider
+  
+  Current[12][12] = 'o';
+  Current[13][13] = 'o';
+  Current[14][11] = 'o';
+  Current[14][12] = 'o';
+  Current[14][13] = 'o';
+
+
+
+
+  while (1 == 1) {
+
+    for (int i=0;i < rows; i++) {
+      for (int j=0; j < columns; j++) {
+        int aliveNeighbors = countAliveNeighbors(Current, i, j);
+        if (Current[i][j] == 'x' && aliveNeighbors == 3) {
+          Current[i][j] = 'o';
+        }
+        else if (aliveNeighbors == 2 || aliveNeighbors == 3) {
+          continue;
+        }
+        else {
+          Current[i][j] = 'x';
+        }
+      }
+    }
+    PrintMatrix (Current,rows,columns);
+    sleep(1);
+  }
 
   for (int i=0; i < rows; i++)
-    delete[] M[i]; //deallocating the row arrays
-  delete[] M; //deallocating the array of pointers
+    delete[] Current[i]; //deallocating the row arrays
+  delete[] Current; //deallocating the array of pointers
   //All dynamic memory must be deallocated when
   //you're done with it.
   //Any memory created with new, must be destroyed
   //with delete.
   return 0;
+}
+
+void PrintMatrix (char **Current, int r, int c) {
+
+    std::cout << std::endl;
+    std::cout << std::endl;
+    std::cout << std::endl;
+    std::cout << std::endl;
+  for (int i=0; i < r; i++) {
+    for (int j=0; j < c; j++)
+      std::cout << Current[i][j] << ' ';
+    std::cout << std::endl;
+  }
+}
+
+int countAliveNeighbors(char **Current, int x, int y) {
+  int sum = 0;
+  for (int i = -1; i < 2; i++) {
+    for (int j = -1; j < 2; j++) {
+      int col = (x + i + columns) % columns;
+      int row = (y + j + rows) % rows;
+      if (Current[col][row] != 'x') sum+=1;
+    }
+  }
+  return sum;
 }
