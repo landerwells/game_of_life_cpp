@@ -20,6 +20,8 @@ int main (int argc, char *argv[]) {
     for (int j=0; j < columns; j++)
       Current[i][j] = 'x';
 
+  Next = Current;
+
   // Make the starting shape here
 
   // Glider
@@ -30,6 +32,7 @@ int main (int argc, char *argv[]) {
   Current[14][12] = 'o';
   Current[14][13] = 'o';
 
+  PrintMatrix (Current,rows,columns);
 
 
 
@@ -39,23 +42,26 @@ int main (int argc, char *argv[]) {
       for (int j=0; j < columns; j++) {
         int aliveNeighbors = countAliveNeighbors(Current, i, j);
         if (Current[i][j] == 'x' && aliveNeighbors == 3) {
-          Current[i][j] = 'o';
+          Next[i][j] = 'o';
         }
         else if (aliveNeighbors == 2 || aliveNeighbors == 3) {
           continue;
         }
         else {
-          Current[i][j] = 'x';
+          Next[i][j] = 'x';
         }
       }
     }
     PrintMatrix (Current,rows,columns);
+    
+    Next = Current;
+    for (int i=0; i < rows; i++)
+      delete[] Current[i]; //deallocating the row arrays
+    delete[] Current; //deallocating the array of pointers
+
     sleep(1);
   }
 
-  for (int i=0; i < rows; i++)
-    delete[] Current[i]; //deallocating the row arrays
-  delete[] Current; //deallocating the array of pointers
   //All dynamic memory must be deallocated when
   //you're done with it.
   //Any memory created with new, must be destroyed
