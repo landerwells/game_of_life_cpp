@@ -1,16 +1,18 @@
 #include <iostream>
 #include <unistd.h>
-#include "Life.h"
+#include "main.h"
+
+// How to get the terminal window size in cpp, and also how to do a lot of 
+// escape code goodness?
 
 const int gameSize = 50;
 int rows = 25;
 int columns = 25;
+
 // Need to make multiple boards or else changing the bit inside each cell
 // doesn't matter.
 
-int main (int argc, char *argv[]) {
-
-
+int main() {
   char **Current = new char * [rows]; //Allocate the array of rows
   char **Next = new char * [rows]; //Allocate the array of rows
 
@@ -33,8 +35,6 @@ int main (int argc, char *argv[]) {
   Current[14][13] = 'o';
 
   PrintMatrix (Current,rows,columns);
-
-
 
   while (1 == 1) {
 

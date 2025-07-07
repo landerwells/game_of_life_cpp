@@ -1,13 +1,12 @@
-#ifndef Life_h
-#define Life_h
+#ifndef MAIN_H
+#define MAIN_H
 
 #include <iostream>
 #include <string>
 #include <cstdlib>
 using namespace std;
 
-int main (int argc, char **argv);
+int main ();
 void PrintMatrix (char **M, int r, int c);
 int countAliveNeighbors(char **M, int x, int y);
-
-#endif
+#endif // MAIN_H
