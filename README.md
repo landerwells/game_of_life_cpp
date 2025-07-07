@@ -1,4 +1,4 @@
-This is my rendition of John Conway's Game of Life in C++
+My rendition of John Conway's Game of Life in C++
 
 All you need to run is 
 ```
