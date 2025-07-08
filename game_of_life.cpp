@@ -29,16 +29,24 @@ void GameOfLife::GameIter(std::vector<std::vector<State>>& grid) {
     PrintBoard(grid);
     grid = NextGrid(grid);
     // Sleep for a short duration to visualize the game
-    usleep(100000); // Sleep for 100 milliseconds
+    usleep(1000);
   }
 }
 
+// This will likely be the hardest to implement how I want, although maybe I can 
+// just pritn anyways
 void GameOfLife::PrintBoard(std::vector<std::vector<GameOfLife::State>>& grid) {
-  if (grid[0][0] == GameOfLife::State::Dead) {
-    std::cout << "The first cell is dead\n";
+  for (const auto& row : grid) {
+    for (const auto& cell : row) {
+      if (cell == GameOfLife::State::Alive) {
+        std::cout << "█";
+      } else {
+        std::cout << ".";
+      }
+    }
+    std::cout << "\n";
   }
 }
-
 
 std::vector<std::vector<GameOfLife::State>> 
 GameOfLife::NextGrid(std::vector<std::vector<GameOfLife::State>>& grid) {
@@ -84,6 +92,9 @@ int GameOfLife::CountAliveNeighbors(std::vector<std::vector<GameOfLife::State>>&
   int sum = 0;
   for (int row_offset = -1; row_offset < 2; row_offset++) {
     for (int col_offset = -1; col_offset < 2; col_offset++) {
+      if (row_offset == 0 && col_offset == 0) {
+        continue; // Skip the current cell
+      }
       int row = (current_row + row_offset) % grid.size();
       int col = (current_column + col_offset) % grid[0].size();
       if (grid[row][col] == GameOfLife::State::Alive) sum+=1;
