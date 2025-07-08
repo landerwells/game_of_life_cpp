@@ -1,13 +1,50 @@
 #include <iostream>
+#include <sys/ioctl.h>
+#include <unistd.h>
+#include "game_of_life.h"
 
-class GameOfLife {
-  GameOfLife(int rows, int columns) {
-    std::cout << rows << columns << "\n";
+GameOfLife::GameOfLife() {
+  struct winsize w;
+
+  if (ioctl(STDOUT_FILENO, TIOCGWINSZ, &w) == -1) {
+    perror("ioctl");
   }
-};
 
-int rows = 25;
-int columns = 25;
+  int width = w.ws_col;
+  int height = w.ws_row;
+
+  std::cout << "Terminal size: " << width << " cols x " << height << " rows\n";
+  std::cout << "A new game has been created\n";
+
+  std::vector<std::vector<GameOfLife::State>> 
+  grid(height, std::vector<GameOfLife::State>(width, GameOfLife::State::Dead));
+
+  GameOfLife::GameIter(grid);
+}
+
+void GameOfLife::GameIter(std::vector<std::vector<State>>& grid) {
+  while (true) {
+    // print the board
+    GameOfLife::PrintBoard(grid);
+
+    // update the board
+    grid = GameOfLife::NextGrid(grid);
+  }
+}
+
+void PrintBoard(std::vector<std::vector<GameOfLife::State>>& grid) {
+  // Will need to extract this information from the grid or pass it in.
+  if (grid[0][0] == GameOfLife::State::Dead) {
+    std::cout << "The first cell is dead\n";
+  }
+}
+
+std::vector<std::vector<GameOfLife::State>> 
+  NextGrid(std::vector<std::vector<GameOfLife::State>>& grid) {
+  // This is where the majority of the logic needs to be implemented,
+  // Technically I could make this run fast using 
+  return grid;
+}
 
 // int main() {
 //   char **Current = new char * [rows];
@@ -63,27 +100,14 @@ int columns = 25;
 // Need to make multiple boards or else changing the bit inside each cell
 // doesn't matter.
 
-void PrintMatrix (char **Current, int r, int c) {
-
-    std::cout << std::endl;
-    std::cout << std::endl;
-    std::cout << std::endl;
-    std::cout << std::endl;
-  for (int i=0; i < r; i++) {
-    for (int j=0; j < c; j++)
-      std::cout << Current[i][j] << ' ';
-    std::cout << std::endl;
-  }
-}
-
-int countAliveNeighbors(char **Current, int x, int y) {
-  int sum = 0;
-  for (int i = -1; i < 2; i++) {
-    for (int j = -1; j < 2; j++) {
-      int col = (x + i + columns) % columns;
-      int row = (y + j + rows) % rows;
-      if (Current[col][row] != 'x') sum+=1;
-    }
-  }
-  return sum;
-}
+// int countAliveNeighbors(char **Current, int x, int y) {
+//   int sum = 0;
+//   for (int i = -1; i < 2; i++) {
+//     for (int j = -1; j < 2; j++) {
+//       int col = (x + i + columns) % columns;
+//       int row = (y + j + rows) % rows;
+//       if (Current[col][row] != 'x') sum+=1;
+//     }
+//   }
+//   return sum;
+// }
