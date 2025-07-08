@@ -10,8 +10,8 @@ GameOfLife::GameOfLife() {
     perror("ioctl");
   }
 
-  int width = w.ws_col;
-  int height = w.ws_row;
+  int width = w.ws_col - 2;
+  int height = w.ws_row - 4;
 
   std::cout << "Terminal size: " << width << " cols x " << height << " rows\n";
   std::cout << "A new game has been created\n";
