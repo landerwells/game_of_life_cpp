@@ -34,17 +34,28 @@ void GameOfLife::GameIter(std::vector<std::vector<State>>& grid) {
 }
 
 void GameOfLife::PrintBoard(std::vector<std::vector<GameOfLife::State>>& grid) {
-  std::cout << "\033[2J\033[H";  // Clear screen and move cursor to top-left
-  for (const auto& row : grid) {
-    for (const auto& cell : row) {
-      if (cell == GameOfLife::State::Alive) {
-        std::cout << "█";
-      } else {
-        std::cout << " ";
-      }
+    std::cout << "\033[2J\033[H";  // Clear screen
+
+    int width = grid[0].size();
+
+    std::cout << '+';
+    for (int i = 0; i < width; ++i) std::cout << '-';
+    std::cout << "+\n";
+
+    for (const auto& row : grid) {
+        std::cout << '|';
+        for (const auto& cell : row) {
+            if (cell == GameOfLife::State::Alive)
+                std::cout << "\033[32m█\033[0m";
+            else
+                std::cout << ' ';
+        }
+        std::cout << "|\n";
     }
-    std::cout << "\n";
-  }
+
+    std::cout << '+';
+    for (int i = 0; i < width; ++i) std::cout << '-';
+    std::cout << "+\n";
 }
 
 std::vector<std::vector<GameOfLife::State>> 
