@@ -33,15 +33,14 @@ void GameOfLife::GameIter(std::vector<std::vector<State>>& grid) {
   }
 }
 
-// This will likely be the hardest to implement how I want, although maybe I can 
-// just pritn anyways
 void GameOfLife::PrintBoard(std::vector<std::vector<GameOfLife::State>>& grid) {
+  std::cout << "\033[2J\033[H";  // Clear screen and move cursor to top-left
   for (const auto& row : grid) {
     for (const auto& cell : row) {
       if (cell == GameOfLife::State::Alive) {
         std::cout << "█";
       } else {
-        std::cout << ".";
+        std::cout << " ";
       }
     }
     std::cout << "\n";
@@ -95,8 +94,8 @@ int GameOfLife::CountAliveNeighbors(std::vector<std::vector<GameOfLife::State>>&
       if (row_offset == 0 && col_offset == 0) {
         continue; // Skip the current cell
       }
-      int row = (current_row + row_offset) % grid.size();
-      int col = (current_column + col_offset) % grid[0].size();
+      int row = (current_row + row_offset + grid.size()) % grid.size();
+      int col = (current_column + col_offset + grid[0].size()) % grid[0].size();
       if (grid[row][col] == GameOfLife::State::Alive) sum+=1;
     }
   }
