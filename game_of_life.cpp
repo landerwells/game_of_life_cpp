@@ -19,95 +19,85 @@ GameOfLife::GameOfLife() {
   std::vector<std::vector<GameOfLife::State>> 
   grid(height, std::vector<GameOfLife::State>(width, GameOfLife::State::Dead));
 
-  GameOfLife::GameIter(grid);
+  CreateGlider(grid);
+
+  GameIter(grid);
 }
 
 void GameOfLife::GameIter(std::vector<std::vector<State>>& grid) {
   while (true) {
-    // print the board
-    GameOfLife::PrintBoard(grid);
-
-    // update the board
-    grid = GameOfLife::NextGrid(grid);
+    PrintBoard(grid);
+    grid = NextGrid(grid);
+    // Sleep for a short duration to visualize the game
+    usleep(100000); // Sleep for 100 milliseconds
   }
 }
 
-void PrintBoard(std::vector<std::vector<GameOfLife::State>>& grid) {
-  // Will need to extract this information from the grid or pass it in.
+void GameOfLife::PrintBoard(std::vector<std::vector<GameOfLife::State>>& grid) {
   if (grid[0][0] == GameOfLife::State::Dead) {
     std::cout << "The first cell is dead\n";
   }
 }
 
+
 std::vector<std::vector<GameOfLife::State>> 
-  NextGrid(std::vector<std::vector<GameOfLife::State>>& grid) {
-  // This is where the majority of the logic needs to be implemented,
-  // Technically I could make this run fast using 
-  return grid;
+GameOfLife::NextGrid(std::vector<std::vector<GameOfLife::State>>& grid) {
+
+  std::vector<std::vector<GameOfLife::State>> new_grid(grid.size(), 
+    std::vector<GameOfLife::State>(grid[0].size(), GameOfLife::State::Dead));
+
+  // Rules of Life:
+  // Any live cell with fewer than two live neighbours dies, as if by underpopulation.
+  // Any live cell with two or three live neighbours lives on to the next generation.
+  // Any live cell with more than three live neighbours dies, as if by overpopulation.
+  // Any dead cell with exactly three live neighbours becomes a live cell, as if by reproduction.
+  // https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life
+
+  // Iterate through all cells in grid, and set the ones in new_grid
+  for (size_t current_row = 0; current_row < grid.size(); current_row++) {
+    for (size_t current_column = 0; current_column < grid[0].size(); current_column++) {
+      int alive_neighbors = CountAliveNeighbors(grid, current_row, current_column);
+      
+      if (grid[current_row][current_column] == GameOfLife::State::Alive) {
+        if (alive_neighbors < 2 || alive_neighbors > 3) {
+          new_grid[current_row][current_column] = GameOfLife::State::Dead;
+        } else {
+          new_grid[current_row][current_column] = GameOfLife::State::Alive;
+        }
+
+      } else {
+        if (alive_neighbors == 3) {
+          new_grid[current_row][current_column] = GameOfLife::State::Alive;
+        }
+      }
+    }
+  }
+
+  return new_grid;
 }
 
-// int main() {
-//   char **Current = new char * [rows];
-//   char **Next = new char * [rows];
+// This method counts the alive neighbors of a cell, wrapping on overflow and 
+// underflow to the bottom or top respectively.
 //
-//   for (int i=0; i < rows; i++)
-//     Current[i] = new char[columns]; //allocate the individual rows
-//   for (int i=0;i < rows; i++)
-//     for (int j=0; j < columns; j++)
-//       Current[i][j] = 'x';
-//
-//   Next = Current;
-//
-//   // Make the starting shape here
-//
-//   // Glider
-//
-//   Current[12][12] = 'o';
-//   Current[13][13] = 'o';
-//   Current[14][11] = 'o';
-//   Current[14][12] = 'o';
-//   Current[14][13] = 'o';
-//
-//   PrintMatrix (Current,rows,columns);
-//
-//   while (1 == 1) {
-//
-//     for (int i=0;i < rows; i++) {
-//       for (int j=0; j < columns; j++) {
-//         int aliveNeighbors = countAliveNeighbors(Current, i, j);
-//         if (Current[i][j] == 'x' && aliveNeighbors == 3) {
-//           Next[i][j] = 'o';
-//         }
-//         else if (aliveNeighbors == 2 || aliveNeighbors == 3) {
-//           continue;
-//         }
-//         else {
-//           Next[i][j] = 'x';
-//         }
-//       }
-//     }
-//     PrintMatrix (Current,rows,columns);
-//
-//     Next = Current;
-//     for (int i=0; i < rows; i++)
-//       delete[] Current[i]; //deallocating the row arrays
-//     delete[] Current; //deallocating the array of pointers
-//
-//     sleep(1);
-//   }
-// }
+// I wonder if there is a more modern way of doing this?
+int GameOfLife::CountAliveNeighbors(std::vector<std::vector<GameOfLife::State>>& grid, int current_row, int current_column) {
+  int sum = 0;
+  for (int row_offset = -1; row_offset < 2; row_offset++) {
+    for (int col_offset = -1; col_offset < 2; col_offset++) {
+      int row = (current_row + row_offset) % grid.size();
+      int col = (current_column + col_offset) % grid[0].size();
+      if (grid[row][col] == GameOfLife::State::Alive) sum+=1;
+    }
+  }
+  return sum;
+}
 
-// Need to make multiple boards or else changing the bit inside each cell
-// doesn't matter.
-
-// int countAliveNeighbors(char **Current, int x, int y) {
-//   int sum = 0;
-//   for (int i = -1; i < 2; i++) {
-//     for (int j = -1; j < 2; j++) {
-//       int col = (x + i + columns) % columns;
-//       int row = (y + j + rows) % rows;
-//       if (Current[col][row] != 'x') sum+=1;
-//     }
-//   }
-//   return sum;
-// }
+void GameOfLife::CreateGlider(std::vector<std::vector<GameOfLife::State>>& grid) {
+  // This is a glider pattern, it will move diagonally across the grid.
+  // Should implement some error checking
+  grid[12][12] = GameOfLife::State::Alive;
+  grid[13][13] = GameOfLife::State::Alive;
+  grid[14][11] = GameOfLife::State::Alive;
+  grid[14][12] = GameOfLife::State::Alive;
+  grid[14][13] = GameOfLife::State::Alive;
+}
